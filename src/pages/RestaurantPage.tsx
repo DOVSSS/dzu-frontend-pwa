@@ -2,17 +2,17 @@ import { useEffect, useState } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { useCart } from '../context/CartContext';
 import { api } from '../services/api';
-import {type RestaurantWithProducts,type Product } from '../types/api.types';
+import { type RestaurantWithProducts } from '../types/api.types';
 import { getImageUrl } from '../utils/imageUrl';
+
 const RestaurantPage = () => {
   const { id } = useParams();
   const navigate = useNavigate();
-  const { addToCart, totalItems } = useCart();
+  const { addToCart, updateQuantity, items, totalItems } = useCart();
 
   const [restaurant, setRestaurant] = useState<RestaurantWithProducts | null>(null);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState('');
-  const [addedIds, setAddedIds] = useState<string[]>([]);
 
   useEffect(() => {
     const fetch = async () => {
@@ -28,12 +28,9 @@ const RestaurantPage = () => {
     fetch();
   }, [id]);
 
-  const handleAdd = (product: Product) => {
-    addToCart(product);
-    setAddedIds((prev) => [...prev, product.id]);
-    setTimeout(() => {
-      setAddedIds((prev) => prev.filter((i) => i !== product.id));
-    }, 1000);
+  const getQuantity = (productId: string) => {
+    const item = items.find((i) => i.product.id === productId);
+    return item?.quantity ?? 0;
   };
 
   return (
@@ -117,16 +114,33 @@ const RestaurantPage = () => {
                       {product.price} ₽
                     </p>
                   </div>
-                  <button
-                    onClick={() => handleAdd(product)}
-                    className={`flex-shrink-0 w-10 h-10 rounded-xl flex items-center justify-center text-xl transition-colors ${
-                      addedIds.includes(product.id)
-                        ? 'bg-green-500 text-white'
-                        : 'bg-orange-500 text-white hover:bg-orange-600'
-                    }`}
-                  >
-                    {addedIds.includes(product.id) ? '✓' : '+'}
-                  </button>
+
+                  {getQuantity(product.id) === 0 ? (
+                    <button
+                      onClick={() => addToCart(product)}
+                      className="flex-shrink-0 w-10 h-10 rounded-xl flex items-center justify-center text-xl bg-orange-500 text-white hover:bg-orange-600 transition-colors"
+                    >
+                      +
+                    </button>
+                  ) : (
+                    <div className="flex-shrink-0 flex items-center gap-2 bg-orange-50 rounded-xl px-2 py-1">
+                      <button
+                        onClick={() => updateQuantity(product.id, getQuantity(product.id) - 1)}
+                        className="w-8 h-8 rounded-lg bg-white flex items-center justify-center text-orange-500 hover:bg-orange-100 transition-colors font-bold"
+                      >
+                        −
+                      </button>
+                      <span className="w-5 text-center font-semibold text-gray-900">
+                        {getQuantity(product.id)}
+                      </span>
+                      <button
+                        onClick={() => updateQuantity(product.id, getQuantity(product.id) + 1)}
+                        className="w-8 h-8 rounded-lg bg-orange-500 flex items-center justify-center text-white hover:bg-orange-600 transition-colors font-bold"
+                      >
+                        +
+                      </button>
+                    </div>
+                  )}
                 </div>
               ))}
             </div>
