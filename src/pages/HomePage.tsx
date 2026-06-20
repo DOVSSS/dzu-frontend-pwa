@@ -14,6 +14,25 @@ const HomePage = () => {
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState('');
 
+  const handleShare = async () => {
+  const shareData = {
+    title: 'DZU — Доставка еды',
+    text: 'Заказывай вкусную еду с доставкой через DZU!',
+    url: window.location.origin,
+  };
+
+  if (navigator.share) {
+    try {
+      await navigator.share(shareData);
+    } catch {
+      // пользователь закрыл диалог — ничего не делаем
+    }
+  } else {
+    await navigator.clipboard.writeText(shareData.url);
+    alert('Ссылка скопирована в буфер обмена!');
+  }
+};
+
   useEffect(() => {
     const fetchRestaurants = async () => {
       try {
@@ -58,6 +77,12 @@ const HomePage = () => {
                 </span>
               )}
             </button>
+            <button
+  onClick={handleShare}
+  className="text-gray-600 text-sm font-medium hover:text-orange-500 transition-colors"
+>
+  📤 Поделиться
+</button>
             <button
               onClick={logout}
               className="text-gray-400 text-sm hover:text-red-500 transition-colors"
