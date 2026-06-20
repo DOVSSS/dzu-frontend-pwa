@@ -1,7 +1,6 @@
-import { createContext, useContext, useEffect, useState,type ReactNode } from 'react';
-import {type User } from '../types/api.types';
+import { createContext, useContext, useEffect, useState, type ReactNode } from 'react';
+import { type User } from '../types/api.types';
 import { TokenManager } from '../services/tokenManager';
-import { getMeRequest } from '../services/authService';
 
 interface AuthContextType {
   user: User | null;
@@ -14,31 +13,34 @@ interface AuthContextType {
 const AuthContext = createContext<AuthContextType | null>(null);
 
 export const AuthProvider = ({ children }: { children: ReactNode }) => {
-  const [user, setUser] = useState<User | null>(null);
+  const [user, setUserState] = useState<User | null>(null);
   const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
-    // Восстанавливаем сессию при старте приложения
-    const init = async () => {
-      TokenManager.init();
-      const token = TokenManager.getToken();
-      if (token) {
-        try {
-          const me = await getMeRequest();
-          setUser(me);
-        } catch {
-          TokenManager.clearToken();
-        }
-      }
-      setIsLoading(false);
-    };
+    TokenManager.init();
+    const token = TokenManager.getToken();
+    const savedUser = TokenManager.getUser<User>();
 
-    init();
+    if (token && savedUser) {
+      setUserState(savedUser);
+    } else if (token && !savedUser) {
+      // Токен есть, но юзера нет — невалидная сессия, чистим
+      TokenManager.clearToken();
+    }
+
+    setIsLoading(false);
   }, []);
+
+  const setUser = (newUser: User | null) => {
+    setUserState(newUser);
+    if (newUser) {
+      TokenManager.setUser(newUser);
+    }
+  };
 
   const logout = () => {
     TokenManager.clearToken();
-    setUser(null);
+    setUserState(null);
   };
 
   return (

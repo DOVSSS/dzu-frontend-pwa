@@ -2,10 +2,11 @@ import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { getMyOrders } from '../services/orderService';
 import {type Order,type OrderStatus } from '../types/api.types';
-
+import { getImageUrl } from '../utils/imageUrl';
 const statusConfig: Record<OrderStatus, { label: string; color: string }> = {
   PENDING: { label: 'Ожидает подтверждения', color: 'bg-yellow-100 text-yellow-700' },
   CONFIRMED: { label: 'Подтверждён', color: 'bg-blue-100 text-blue-700' },
+  PREPARING: { label: 'Готовится', color: 'bg-orange-100 text-orange-700' },
   DELIVERING: { label: 'В пути', color: 'bg-purple-100 text-purple-700' },
   DELIVERED: { label: 'Доставлен', color: 'bg-green-100 text-green-700' },
   CANCELLED: { label: 'Отменён', color: 'bg-red-100 text-red-700' },
@@ -96,9 +97,9 @@ const OrdersPage = () => {
                       })}
                     </p>
                   </div>
-                  <span className={`text-xs font-medium px-3 py-1 rounded-full ${statusConfig[order.status].color}`}>
-                    {statusConfig[order.status].label}
-                  </span>
+                 <span className={`text-xs font-medium px-3 py-1 rounded-full ${statusConfig[order.status]?.color ?? 'bg-gray-100 text-gray-700'}`}>
+  {statusConfig[order.status]?.label ?? order.status}
+</span>
                 </div>
 
                 {/* Товары */}
@@ -106,7 +107,7 @@ const OrdersPage = () => {
                   {order.items.map((item) => (
                     <div key={item.id} className="flex items-center gap-3">
                       <img
-                        src={item.productImage}
+                       src={getImageUrl(item.productImage)}
                         alt={item.productName}
                         className="w-10 h-10 object-cover rounded-lg flex-shrink-0"
                       />

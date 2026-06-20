@@ -4,7 +4,7 @@ import { useAuth } from '../context/AuthContext';
 import { useCart } from '../context/CartContext';
 import { getRestaurants } from '../services/restaurantService';
 import {type Restaurant } from '../types/api.types';
-
+import { getImageUrl } from '../utils/imageUrl';
 const HomePage = () => {
   const navigate = useNavigate();
   const { user, logout } = useAuth();
@@ -105,7 +105,7 @@ const HomePage = () => {
                 className="bg-white rounded-2xl overflow-hidden shadow-sm cursor-pointer hover:shadow-md transition-shadow"
               >
                 <img
-                  src={restaurant.image}
+                 src={getImageUrl(restaurant.image)}
                   alt={restaurant.name}
                   className="w-full h-40 object-cover"
                 />

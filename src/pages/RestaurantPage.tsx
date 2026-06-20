@@ -3,7 +3,7 @@ import { useParams, useNavigate } from 'react-router-dom';
 import { useCart } from '../context/CartContext';
 import { api } from '../services/api';
 import {type RestaurantWithProducts,type Product } from '../types/api.types';
-
+import { getImageUrl } from '../utils/imageUrl';
 const RestaurantPage = () => {
   const { id } = useParams();
   const navigate = useNavigate();
@@ -83,7 +83,7 @@ const RestaurantPage = () => {
             {/* Обложка ресторана */}
             <div className="bg-white rounded-2xl overflow-hidden shadow-sm mb-6">
               <img
-                src={restaurant.image}
+                src={getImageUrl(restaurant.image)}
                 alt={restaurant.name}
                 className="w-full h-48 object-cover"
               />
@@ -104,7 +104,7 @@ const RestaurantPage = () => {
                   className="bg-white rounded-2xl p-4 shadow-sm flex gap-4 items-center"
                 >
                   <img
-                    src={product.image}
+                    src={getImageUrl(product.image)}
                     alt={product.name}
                     className="w-20 h-20 object-cover rounded-xl flex-shrink-0"
                   />

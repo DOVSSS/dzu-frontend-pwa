@@ -1,11 +1,10 @@
 import { TOKEN_KEY } from '../constants/storageKeys';
 
-// Токен хранится в памяти для быстрого синхронного доступа,
-// а также синхронизируется с localStorage для сохранения между сессиями
+const USER_KEY = 'dzu_auth_user';
+
 let memoryToken: string | null = null;
 
 export const TokenManager = {
-  // Вызывать при старте приложения
   init(): void {
     try {
       memoryToken = localStorage.getItem(TOKEN_KEY);
@@ -26,5 +25,19 @@ export const TokenManager = {
   clearToken(): void {
     memoryToken = null;
     localStorage.removeItem(TOKEN_KEY);
+    localStorage.removeItem(USER_KEY);
+  },
+
+  getUser<T>(): T | null {
+    try {
+      const raw = localStorage.getItem(USER_KEY);
+      return raw ? JSON.parse(raw) : null;
+    } catch {
+      return null;
+    }
+  },
+
+  setUser(user: unknown): void {
+    localStorage.setItem(USER_KEY, JSON.stringify(user));
   },
 };

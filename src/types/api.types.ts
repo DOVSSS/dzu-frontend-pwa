@@ -57,7 +57,7 @@ export interface RestaurantWithProducts extends Restaurant {
 // ============================================
 // ORDER
 // ============================================
-export type OrderStatus = 'PENDING' | 'CONFIRMED' | 'DELIVERING' | 'DELIVERED' | 'CANCELLED';
+export type OrderStatus = 'PENDING' | 'CONFIRMED' | 'PREPARING' | 'DELIVERING' | 'DELIVERED' | 'CANCELLED';
 
 export interface OrderItem {
   id: string;

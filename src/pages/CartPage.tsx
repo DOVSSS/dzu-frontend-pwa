@@ -3,10 +3,10 @@ import { useNavigate } from 'react-router-dom';
 import { useCart } from '../context/CartContext';
 import { useAuth } from '../context/AuthContext';
 import { createOrder } from '../services/orderService';
-
+import { getImageUrl } from '../utils/imageUrl';
 const CartPage = () => {
   const navigate = useNavigate();
-  const { items, updateQuantity, removeFromCart, clearCart, totalPrice } = useCart();
+  const { items, updateQuantity,  clearCart, totalPrice } = useCart();
   const { user } = useAuth();
 
   const [address, setAddress] = useState(user?.address ?? '');
@@ -84,7 +84,7 @@ const CartPage = () => {
                   className="bg-white rounded-2xl p-4 shadow-sm flex gap-4 items-center"
                 >
                   <img
-                    src={item.product.image}
+                    src={getImageUrl(item.product.image)}
                     alt={item.product.name}
                     className="w-16 h-16 object-cover rounded-xl flex-shrink-0"
                   />
